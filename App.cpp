@@ -1,4 +1,5 @@
 #include <math.h>
+#include <time.h>
 #include <string>
 
 #include "App.h"
@@ -16,6 +17,10 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
 
     isNewGame = true;
 
+    menuOpen = true;
+
+    ai = false;
+
     // Rectangles
     rectangles = new vector<Rect*>;
     rectangles->push_back(new Rect(-0.9, 0.6, 0.6, 0.5));
@@ -30,7 +35,12 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     rectangles->push_back(new Rect(-0.3, -0.4, 0.6, 0.5));
     rectangles->push_back(new Rect(0.3, -0.4, 0.6, 0.5));
 
-    // Initialize all squares to empty
+    // Options
+    options = new vector<Rect*>;
+    options->push_back(new Rect(-0.6, 0.0, 1.2, 0.3));
+    options->push_back(new Rect(-0.6, -0.35, 1.2, 0.3));
+
+    // Initialize all square values to be empty
     for(int i = 0; i<9; i++){ loc[i] = 0; }
 
     // first turn is x, then the winner goes first next round
@@ -64,6 +74,7 @@ void App::checkWin() {
       else {
         winner = 'o';
       }
+      menuOpen = true;
     }
   }
 
@@ -76,6 +87,7 @@ void App::checkWin() {
       else {
         winner = 'o';
       }
+      menuOpen = true;
     }
   }
 
@@ -87,6 +99,7 @@ void App::checkWin() {
     else {
       winner = 'o';
     }
+    menuOpen = true;
   }
   else if ( (loc[2] != 0) && ((loc[2] == loc[4]) && (loc[2] == loc[6])) ) {
     if (loc[0] == 1) {
@@ -95,11 +108,13 @@ void App::checkWin() {
     else {
       winner = 'o';
     }
+    menuOpen = true;
   }
 
-
-  if (full == true && winner == 'n'){
+  // Check if all boxes are full.
+  if ((full == true) && (winner == 'n')){
     winner = 'd';
+    menuOpen = true;
   }
 
 }
@@ -110,47 +125,83 @@ void App::drawMenu(string message){
   // This game has started, so it is no longer new
   isNewGame = false;
 
-  // Clear the screen and set BG color (for unknown reasons, it wont work doing this once.)
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // Set background color
-  if(turn == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
-  else if(turn == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
-  else if(turn == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
+  //Set background color
+  if(winner == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
+  else if(winner == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
+  else if(winner == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
   else { rcolor = 0.22; gcolor = 0.22; bcolor = 0.0; }
   glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
+
+//==============================================================
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
+
+  // Clear the screen
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // Clear the screen
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Set up the transformations stack
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
   // Set Color
-  glColor3f(0.0, 0.0, 0.0);
+  glColor3d(1.0, 1.0, 1.0);
 
-  cout << message << endl;
+  //Draw rectangles for our menu buttons
+  for(auto it = options->cbegin(); it != options->cend(); it++){
+    glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
 
-  // Initialize state variables
-  mx = 0.0;
-  my = 0.0;
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glBegin(GL_POLYGON);
+    glVertex2f((*it)->getX(),                   (*it)->getY());
+    glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
+    glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
+    glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
+    glEnd();
+
+    glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_POLYGON);
+    glVertex2f((*it)->getX(),                   (*it)->getY());
+    glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
+    glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
+    glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
+    glEnd();
+  }
+
+
+  // We have been drawing everything to the back buffer
+  // Swap the buffers to see the result of what we drew
+  glFlush();
+  glutSwapBuffers(); //==========================================================
 
   // Initialize all squares to empty
   for(int i = 0; i<9; i++){ loc[i] = 0; }
 
   // Winner is first on restart
-  turn = winner;
+  if (winner != 'n' || winner != 'd'){
+      turn == winner;
+  }
+  else {
+    turn == 'x';
+  }
 
   // Winner will eventually be 'x' or 'o' or 'd' for draw
   winner = 'n';
-  // We have been drawing everything to the back buffer
-  // Swap the buffers to see the result of what we drew
-  glFlush();
-  glutSwapBuffers();
 
+}
+
+void App::delay(float secs){
+  float end = clock()/CLOCKS_PER_SEC + secs;
+  while((clock()/CLOCKS_PER_SEC) < end);
 }
 
 // Main Draw function
 void App::draw() {
 
+  if(menuOpen){
     if (isNewGame){
       drawMenu("Welcome! Choose a game mode!");
     }
@@ -165,136 +216,134 @@ void App::draw() {
         drawMenu("Draw! Choose a game mode!");
       }
 
-    }
-
-
-    // Clear the screen and set BG color (for unknown reasons, it wont work doing this once.)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // Set background color
-    if(turn == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
-    else if(turn == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
-    else if(turn == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
-    else { rcolor = 0.22; gcolor = 0.22; bcolor = 0.0; }
-    glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // Set background color
-    if(turn == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
-    else if(turn == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
-    else if(turn == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
-    else { rcolor = 0.22; gcolor = 0.22; bcolor = 0.0; }
-    glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
-
-    // Set up the transformations stack
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    // Set Color
-    glColor3f(1.0, 1.0, 1.0);
-
-    // Draw the team on top to indicate player's turn X/O
-    if (turn == 'x') {
-      glBegin(GL_LINES);
-      glVertex2f(0.0f - 0.1f, 0.8f - 0.1f);
-      glVertex2f(0.0f + 0.1f, 0.8f + 0.1f);
-      glVertex2f(0.0f + 0.1f, 0.8f - 0.1f);
-      glVertex2f(0.0f - 0.1f, 0.8f + 0.1f);
-      glEnd();
-    }
-    else {
-      float DEG2RAD = 3.14159/180;
-      glBegin(GL_LINE_LOOP);
-      for (int i=0; i < 360; i++) {
-        float degInRad = i*DEG2RAD;
-        glVertex2f(cos(degInRad)*0.1 + 0.0f, sin(degInRad)*0.1 + 0.8f);
       }
-      glEnd();
     }
+    else{
+      // Clear the screen and set BG color (for unknown reasons, it wont work doing this once.)
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // Set background color
+      if(turn == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
+      else if(turn == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
+      else if(turn == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
+      else { rcolor = 0.22; gcolor = 0.22; bcolor = 0.0; }
+      glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // Set background color
+      if(turn == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
+      else if(turn == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
+      else if(turn == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
+      else { rcolor = 0.22; gcolor = 0.22; bcolor = 0.0; }
+      glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
 
-    // Draw player's moves
-    // Temp vars to shift the X axis of token
-    for (int i = 0; i<9; i++){
-      // Use this as your center cordinate for X and Os
-      float xshift = -0.6;
-      float yshift = 0.35;
+      // Set up the transformations stack
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
 
-      // Temp variables for shifting X token
-      int column = i%3;
-      if(column == 1) { xshift = 0; }
-      else if(column == 2) { xshift = 0.6; }
+      // Set Color
+      glColor3f(1.0, 1.0, 1.0);
 
-      // Temp vars for shifting Y for token
-      if(i >=3 && i < 6) { yshift = -.15; }
-      else if (i >= 6) { yshift = -.65; }
-
-      // Draw X
-      if (loc[i] == 1){
+      // Draw the team on top to indicate player's turn X/O
+      if (turn == 'x') {
         glBegin(GL_LINES);
-        glVertex2f(xshift - 0.2f, yshift - 0.2f);
-        glVertex2f(xshift + 0.2f, yshift + 0.2f);
-        glVertex2f(xshift + 0.2f, yshift - 0.2f);
-        glVertex2f(xshift - 0.2f, yshift + 0.2f);
+        glVertex2f(0.0f - 0.1f, 0.8f - 0.1f);
+        glVertex2f(0.0f + 0.1f, 0.8f + 0.1f);
+        glVertex2f(0.0f + 0.1f, 0.8f - 0.1f);
+        glVertex2f(0.0f - 0.1f, 0.8f + 0.1f);
         glEnd();
       }
-
-      // Draw O
-      else if (loc[i] == -1){
-        // Draw O
+      else {
         float DEG2RAD = 3.14159/180;
         glBegin(GL_LINE_LOOP);
         for (int i=0; i < 360; i++) {
           float degInRad = i*DEG2RAD;
-          glVertex2f(cos(degInRad)*0.2 + xshift, sin(degInRad)*0.2 + yshift);
+          glVertex2f(cos(degInRad)*0.1 + 0.0f, sin(degInRad)*0.1 + 0.8f);
         }
         glEnd();
       }
-    }
 
-    // Draw Grid
-    glBegin(GL_LINES);
-    // vertical top
-    glVertex2f(-0.3f, -0.9f);
-    glVertex2f(-0.3f, 0.6f);
-    // vertical bottom
-    glVertex2f(0.3f, -0.9f);
-    glVertex2f(0.3f, 0.6f);
-    // horizontal top
-    glVertex2f(-0.9f, 0.1f);
-    glVertex2f(0.9f, 0.1f);
-    // horizontal bottom
-    glVertex2f(-0.9f, -0.4f);
-    glVertex2f(0.9f, -0.4f);
-    glEnd();
+      // Draw player's moves
+      // Temp vars to shift the X axis of token
+      for (int i = 0; i<9; i++){
+        // Use this as your center cordinate for X and Os
+        float xshift = -0.6;
+        float yshift = 0.35;
 
-    //Draw rectangles to make sure that we did it right
-    for(auto it = rectangles->cbegin(); it != rectangles->cend(); it++){
-      glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
+        // Temp variables for shifting X token
+        int column = i%3;
+        if(column == 1) { xshift = 0; }
+        else if(column == 2) { xshift = 0.6; }
 
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      glBegin(GL_POLYGON);
-      glVertex2f((*it)->getX(),                   (*it)->getY());
-      glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
-      glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
-      glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
+        // Temp vars for shifting Y for token
+        if(i >=3 && i < 6) { yshift = -.15; }
+        else if (i >= 6) { yshift = -.65; }
+
+        // Draw X
+        if (loc[i] == 1){
+          glBegin(GL_LINES);
+          glVertex2f(xshift - 0.2f, yshift - 0.2f);
+          glVertex2f(xshift + 0.2f, yshift + 0.2f);
+          glVertex2f(xshift + 0.2f, yshift - 0.2f);
+          glVertex2f(xshift - 0.2f, yshift + 0.2f);
+          glEnd();
+        }
+
+        // Draw O
+        else if (loc[i] == -1){
+          // Draw O
+          float DEG2RAD = 3.14159/180;
+          glBegin(GL_LINE_LOOP);
+          for (int i=0; i < 360; i++) {
+            float degInRad = i*DEG2RAD;
+            glVertex2f(cos(degInRad)*0.2 + xshift, sin(degInRad)*0.2 + yshift);
+          }
+          glEnd();
+        }
+      }
+
+      // Draw Grid
+      glBegin(GL_LINES);
+      // vertical top
+      glVertex2f(-0.3f, -0.9f);
+      glVertex2f(-0.3f, 0.6f);
+      // vertical bottom
+      glVertex2f(0.3f, -0.9f);
+      glVertex2f(0.3f, 0.6f);
+      // horizontal top
+      glVertex2f(-0.9f, 0.1f);
+      glVertex2f(0.9f, 0.1f);
+      // horizontal bottom
+      glVertex2f(-0.9f, -0.4f);
+      glVertex2f(0.9f, -0.4f);
       glEnd();
 
-      glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
+      //Draw rectangles to make sure that we did it right
+      for(auto it = rectangles->cbegin(); it != rectangles->cend(); it++){
+        glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
 
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      glBegin(GL_POLYGON);
-      glVertex2f((*it)->getX(),                   (*it)->getY());
-      glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
-      glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
-      glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
-      glEnd();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glBegin(GL_POLYGON);
+        glVertex2f((*it)->getX(),                   (*it)->getY());
+        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
+        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
+        glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
+        glEnd();
+
+        glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glBegin(GL_POLYGON);
+        glVertex2f((*it)->getX(),                   (*it)->getY());
+        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
+        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
+        glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
+        glEnd();
+      }
+
+      // We have been drawing everything to the back buffer
+      // Swap the buffers to see the result of what we drew
+      glFlush();
+      glutSwapBuffers();
     }
-
-    //glColor3d(1, 1, 1);
-
-    // We have been drawing everything to the back buffer
-    // Swap the buffers to see the result of what we drew
-    glFlush();
-    glutSwapBuffers();
-
 }
 
 void App::mouseDown(float x, float y){
@@ -302,28 +351,103 @@ void App::mouseDown(float x, float y){
     mx = x;
     my = y;
 
-    // Iterate through the squares and check if any contain the click event
-    int i = 0;
-    for(auto it = rectangles->cbegin(); it != rectangles->cend(); it++){
-      if ((*it)->contains(mx, my)){
-        // Make sure this rectangle is empty before doing anything
-        if (loc[i]!=0) { break; }
-        // if 'it' is clicked, add the corresponding player's decision to the array
-        if(turn == 'x'){
-          loc[i] = 1;
-          turn = 'o';
+    // Set clickable rectangles only if the menu is open
+    if(menuOpen){
+      // Iterate through the option buttons and check if any contain the click event
+      int i = 0;
+      for(auto it = options->cbegin(); it != options->cend(); it++){
+        if ((*it)->contains(mx, my)){
+          if (i == 0) { // First Menu button
+            ai = true;
+            menuOpen = false;
+            int pick = (int)rand()%9;
+            if (loc[pick] == 0){
+              loc[pick] = -1;
+              turn = 'x';
+            }
+          }
+          if (i == 1) {
+            ai = false;
+            menuOpen = false;
+          }
+          cout << turn;
         }
-        else{
-          loc[i] = -1;
-          turn = 'x';
-        }
-
-        // Now check for a winner
-        checkWin();
-
-        break;
+        i++;
       }
-      i++;
+    }
+    else{
+      // Iterate through the squares and check if any contain the click event
+
+      // one player
+      if (ai && turn=='x') {
+        int i = 0;
+        for(auto it = rectangles->cbegin(); it != rectangles->cend(); it++){
+          if ((*it)->contains(mx, my)){
+            // Make sure this rectangle is empty before doing anything
+            if (loc[i]!=0) { break; }
+            // if 'it' is clicked, add the corresponding player's decision to the array
+            if(turn == 'x'){
+              loc[i] = 1;
+              turn = 'o';
+            }
+            else{
+              loc[i] = -1;
+              turn = 'x';
+            }
+            draw();
+            // Now check for a winner-=======================================================
+            checkWin();
+            // Here we start our AI response
+            // Delay makes it seem like AI is thinking
+            delay((rand()%4));
+            if (menuOpen == true) {
+              break;
+            }
+            else if (ai && turn =='o'){
+              int pick;
+              while (true){
+                pick = (int)rand()%9;
+                if (loc[pick] == 0){
+                  loc[pick] = -1;
+                  turn = 'x';
+                  checkWin();
+                  redraw();
+                  break;
+                }
+              }
+            }
+          }
+          i++;
+        }
+      }
+
+
+      // 2 Player Mode.
+      else{
+        int i = 0;
+        for(auto it = rectangles->cbegin(); it != rectangles->cend(); it++){
+          if ((*it)->contains(mx, my)){
+            // Make sure this rectangle is empty before doing anything
+            if (loc[i]!=0) { break; }
+            // if 'it' is clicked, add the corresponding player's decision to the array
+            if(turn == 'x'){
+              loc[i] = 1;
+              turn = 'o';
+            }
+            else{
+              loc[i] = -1;
+              turn = 'x';
+            }
+
+            // Now check for a winner
+            checkWin();
+
+            break;
+          }
+          i++;
+        }
+
+      }
     }
 
     // Redraw the scene

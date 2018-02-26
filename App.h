@@ -15,6 +15,10 @@ class App: public GlutApp {
 
     bool isNewGame;
 
+    bool menuOpen;
+
+    bool ai;
+
     // Winner identifier
     char winner;
 
@@ -25,6 +29,7 @@ class App: public GlutApp {
 
     // Rectangles to be selected
     vector<Rect*> *rectangles;
+    vector<Rect*> *options;
 
     // Int Array to player locations
     // 0 means no play, -1 means O and 1 means X
@@ -37,6 +42,7 @@ public:
 
     // These are the events we want to handle
     void draw();
+    void delay(float seconds);
     void keyPress(unsigned char key);
     void mouseDown(float x, float y);
     void mouseDrag(float x, float y);
