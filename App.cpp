@@ -119,11 +119,6 @@ void App::checkWin() {
 
 }
 
-// Small draw function
-//void App::drawMenu(string message){
-
-//}
-
 void App::delay(float secs){
   float end = clock()/CLOCKS_PER_SEC + secs;
   while((clock()/CLOCKS_PER_SEC) < end);
@@ -132,80 +127,7 @@ void App::delay(float secs){
 // Main Draw function
 void App::draw() {
 
-    if(menuOpen){
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      // This game has started, so it is no longer new
-      isNewGame = false;
 
-      //Set background color
-      if(winner == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
-      else if(winner == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
-      else if(winner == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
-      else { rcolor = 0.22; gcolor = 0.22; bcolor = 0.0; }
-      glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
-
-    //==============================================================
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      //glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
-
-      // Clear the screen
-      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      // Clear the screen
-      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      // Set up the transformations stack
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-
-      // Set Color
-      glColor3d(1.0, 1.0, 1.0);
-
-      //Draw rectangles for our menu buttons
-      for(auto it = options->cbegin(); it != options->cend(); it++){
-        glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glBegin(GL_POLYGON);
-        glVertex2f((*it)->getX(),                   (*it)->getY());
-        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
-        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
-        glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
-        glEnd();
-
-        glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glBegin(GL_POLYGON);
-        glVertex2f((*it)->getX(),                   (*it)->getY());
-        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
-        glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
-        glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
-        glEnd();
-      }
-
-
-      // We have been drawing everything to the back buffer
-      // Swap the buffers to see the result of what we drew
-      glFlush();
-      glutSwapBuffers(); //==========================================================
-
-      // Initialize all squares to empty
-      for(int i = 0; i<9; i++){ loc[i] = 0; }
-
-      // Winner is first on restart
-      if (winner != 'n' && winner != 'd'){
-          turn = winner;
-      }
-      else {
-        turn = 'x';
-      }
-
-      // Winner will eventually be 'x' or 'o' or 'd' for draw
-      winner = 'n';
-
-
-      }
-    else{
       // Clear the screen and set BG color (for unknown reasons, it wont work doing this once.)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       // Set background color
@@ -330,7 +252,84 @@ void App::draw() {
       // Swap the buffers to see the result of what we drew
       glFlush();
       glutSwapBuffers();
-    }
+
+
+          if(menuOpen){
+            if (winner != 'n'){
+              delay(2);
+            }
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // This game has started, so it is no longer new
+            isNewGame = false;
+
+            //Set background color
+            if(winner == 'x') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.0; }
+            else if(winner == 'o') { rcolor = 0.0; gcolor = 0.0; bcolor = 0.22; }
+            else if(winner == 'd') { rcolor = 0.22; gcolor = 0.0; bcolor = 0.22; }
+            else { rcolor = 0.22; gcolor = 0.22; bcolor = 0.0; }
+            glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
+
+          //==============================================================
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            //glClearColor(rcolor/0.2, gcolor/0.2, bcolor/0.2, 1.0);
+
+            // Clear the screen
+            //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // Clear the screen
+            //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            // Set up the transformations stack
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+            // Set Color
+            glColor3d(1.0, 1.0, 1.0);
+
+            //Draw rectangles for our menu buttons
+            for(auto it = options->cbegin(); it != options->cend(); it++){
+              glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
+
+              glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+              glBegin(GL_POLYGON);
+              glVertex2f((*it)->getX(),                   (*it)->getY());
+              glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
+              glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
+              glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
+              glEnd();
+
+              glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
+
+              glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+              glBegin(GL_POLYGON);
+              glVertex2f((*it)->getX(),                   (*it)->getY());
+              glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY());
+              glVertex2f((*it)->getX()+(*it)->getW(),     (*it)->getY()-(*it)->getH());
+              glVertex2f((*it)->getX(),                   (*it)->getY()-(*it)->getH());
+              glEnd();
+            }
+
+
+            // We have been drawing everything to the back buffer
+            // Swap the buffers to see the result of what we drew
+            glFlush();
+            glutSwapBuffers(); //==========================================================
+
+            // Initialize all squares to empty
+            for(int i = 0; i<9; i++){ loc[i] = 0; }
+
+            // Winner is first on restart
+            if (winner != 'n' && winner != 'd'){
+                turn = winner;
+            }
+            else {
+              turn = 'x';
+            }
+
+            // Winner will eventually be 'x' or 'o' or 'd' for draw
+            winner = 'n';
+            }
+
 }
 
 void App::mouseDown(float x, float y){
