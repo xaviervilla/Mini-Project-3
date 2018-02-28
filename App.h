@@ -5,6 +5,8 @@
 #include "GlutApp.h"
 #include "Rect.h"
 
+
+
 class App: public GlutApp {
     // Maintain app state here
     float mx;

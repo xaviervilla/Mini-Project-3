@@ -5,6 +5,7 @@
 #include "App.h"
 #include "Rect.h"
 
+
 App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w, h){
     // Initialize state variables
     mx = 0.0;
@@ -50,6 +51,155 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     winner = 'n';
 
 }
+
+//=======================================================================================
+
+	// drawDiggie(start X, start Y, Scalar x, Scalar y)
+	float drawDiggie(float X, float Y, float x, float y, bool one, bool two, bool three, bool four, bool five, bool six, bool seven){
+		if (one){ //Vertical
+			glBegin(GL_POLYGON);
+				glVertex2f(.2f*x+X, .9f*y+Y);
+				glVertex2f(.3f*x+X, 1.0f*y+Y);
+				glVertex2f(.4f*x+X, .9f*y+Y);
+				glVertex2f(.4f*x+X, .6f*y+Y);
+				glVertex2f(.3f*x+X, .5f*y+Y);
+				glVertex2f(.2f*x+X, .6f*y+Y);
+			glEnd();
+		}
+		if (two){ //Horizontal 1
+			glBegin(GL_POLYGON);
+				glVertex2f(.4f*x+X, 1.1f*y+Y);//top left - left top
+				glVertex2f(.3f*x+X, 1.0f*y+Y); //ctr - left
+				glVertex2f(.4f*x+X, .9f*y+Y);//top right - left bottom
+				glVertex2f(.7f*x+X, .9f*y+Y);// bottom right - bottom right
+				glVertex2f(.8f*x+X, 1.0f*y+Y);// bottom - right
+				glVertex2f(.7f*x+X, 1.1f*y+Y);// bottom left - right top
+			glEnd();
+		}
+		if (three){ //vertical
+			glBegin(GL_POLYGON);
+				glVertex2f(.2f*x+X + x*.5, .9f*y+Y);
+				glVertex2f(.3f*x+X + x*.5, 1.0f*y+Y);
+				glVertex2f(.4f*x+X + x*.5, .9f*y+Y);
+				glVertex2f(.4f*x+X + x*.5, .6f*y+Y);
+				glVertex2f(.3f*x+X + x*.5, .5f*y+Y);
+				glVertex2f(.2f*x+X + x*.5, .6f*y+Y);
+			glEnd();
+		}
+		if (four){ //Horizontal 2
+			glBegin(GL_POLYGON);
+				glVertex2f(.4f*x+X, 1.1f*y+Y - y*.5);//top left - left top
+				glVertex2f(.3f*x+X, 1.0f*y+Y - y*.5); //ctr - left
+				glVertex2f(.4f*x+X, .9f*y+Y - y*.5);//top right - left bottom
+				glVertex2f(.7f*x+X, .9f*y+Y - y*.5);// bottom right - bottom right
+				glVertex2f(.8f*x+X, 1.0f*y+Y - y*.5);// bottom - right
+				glVertex2f(.7f*x+X, 1.1f*y+Y - y*.5);// bottom left - right top
+			glEnd();
+		}
+		if (five){ //vertical
+			glBegin(GL_POLYGON);
+				glVertex2f(.2f*x+X, .9f*y+Y - y*.5);
+				glVertex2f(.3f*x+X, 1.0f*y+Y - y*.5);
+				glVertex2f(.4f*x+X, .9f*y+Y - y*.5);
+				glVertex2f(.4f*x+X, .6f*y+Y - y*.5);
+				glVertex2f(.3f*x+X, .5f*y+Y - y*.5);
+				glVertex2f(.2f*x+X, .6f*y+Y - y*.5);
+			glEnd();
+		}
+		if (six){ //vertical
+			glBegin(GL_POLYGON);
+				glVertex2f(.2f*x+X + x*.5, .9f*y+Y - y*.5);
+				glVertex2f(.3f*x+X + x*.5, 1.0f*y+Y - y*.5);
+				glVertex2f(.4f*x+X + x*.5, .9f*y+Y - y*.5);
+				glVertex2f(.4f*x+X + x*.5, .6f*y+Y - y*.5);
+				glVertex2f(.3f*x+X + x*.5, .5f*y+Y - y*.5);
+				glVertex2f(.2f*x+X + x*.5, .6f*y+Y - y*.5);
+			glEnd();
+		}
+		if (seven){ //Horizontal 3
+			glBegin(GL_POLYGON);
+				glVertex2f(.4f*x+X, 1.1f*y+Y - y*1);//top left - left top
+				glVertex2f(.3f*x+X, 1.0f*y+Y - y*1); //ctr - left
+				glVertex2f(.4f*x+X, .9f*y+Y - y*1);//top right - left bottom
+				glVertex2f(.7f*x+X, .9f*y+Y - y*1);// bottom right - bottom right
+				glVertex2f(.8f*x+X, 1.0f*y+Y - y*1);// bottom - right
+				glVertex2f(.7f*x+X, 1.1f*y+Y - y*1);// bottom left - right top
+			glEnd();
+		}
+		return x*.8;
+	}
+
+
+//--------------(char c, start X, start Y, Scalar x, Scalar y)
+//====================================================
+float drawletter(char c, float X, float Y, float x, float y){
+	float scoot = 0;
+	if(c == 'X' || c == 'x'){
+		scoot = drawDiggie(X, Y, x, y, true, false, true, true, true, true, false);
+	}
+	else if(c == 'A' || c == 'a'){
+		scoot = drawDiggie(X, Y, x, y, true, true, true, true, true, true, false);
+	}
+	else if(c == 'I' || c == 'i'){
+		scoot = drawDiggie(X, Y, x, y, true, false, false, false, true, false, false);
+	}
+	else if(c == 'E' || c == 'e'){
+		scoot = drawDiggie(X, Y, x, y, true, true, false, true, true, false, true);
+  }
+	else if(c == 'R' || c == 'r'){
+		scoot = drawDiggie(X, Y, x, y, true, true, true, true, true, true, false);
+	}
+	else if(c == 'n' || c == 'N'){
+		scoot = drawDiggie(X, Y, x, y, true, true, true, false, true, true, false);
+	}
+  else if(c == 'P' || c == 'p'){
+    scoot = drawDiggie(X, Y, x, y, true, true, true, true, true, false, false);
+  }
+  else if(c == 'l' || c == 'L'){
+    scoot = drawDiggie(X, Y, x, y, true, false, false, false, true, false, true);
+  }
+  else if(c == 'y' || c == 'Y'){
+    scoot = drawDiggie(X, Y, x, y, true, false, true, true, false, true, true);
+  }
+  else if(c == '1'){
+    scoot = drawDiggie(X, Y, x, y, true, false, false, false, true, false, false);
+  }
+  else if(c == ' '){
+    scoot = drawDiggie(X, Y, x, y, false, false, false, false, false, false, false);
+  }
+  else if(c == '2'){
+    scoot = drawDiggie(X, Y, x, y, false, true, true, true, true, false, true);
+  }
+  else if(c == 'c' || c == 'C'){
+    scoot = drawDiggie(X, Y, x, y, true, true, false, false, true, false, true);
+  }
+  else if(c == 'h' || c == 'H'){
+    scoot = drawDiggie(X, Y, x, y, true, false, true, true, true, true, false);
+  }
+  else if(c == 'o' || c == 'O'){
+    scoot = drawDiggie(X, Y, x, y, true, true, true, false, true, true, true);
+  }
+  else if(c == 's' || c == 'S'){
+    scoot = drawDiggie(X, Y, x, y, true, true, false, true, false, true, true);
+  }
+  else if (c == '-'){
+    scoot = drawDiggie(X, Y, x, y, false, false, false, true, false, false, false);
+  }
+	return scoot;
+}
+
+//----------(string name, start X, start Y, Scalar x, Scalar y)
+void drawname(string name, float X, float Y, float x, float y) {
+
+	// for each letter print char
+	float scoot = 0;
+	float tmp = X;
+	for (size_t i = 0; i < name.length(); i++){
+		tmp = tmp + scoot;
+		scoot = drawletter(name[i], tmp, Y, x, y);
+	}
+}
+//============end of mods
 
 // This checks for a winner and changes char winner = 'x' or 'o'
 // This function is called every turn, so it is used for debugging.
@@ -117,6 +267,9 @@ void App::checkWin() {
     menuOpen = true;
   }
 
+  glFlush();
+  glutSwapBuffers();
+
 }
 
 void App::delay(float secs){
@@ -126,7 +279,6 @@ void App::delay(float secs){
 
 // Main Draw function
 void App::draw() {
-
 
       // Clear the screen and set BG color (for unknown reasons, it wont work doing this once.)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -284,11 +436,24 @@ void App::draw() {
             glLoadIdentity();
 
             // Set Color
-            glColor3d(1.0, 1.0, 1.0);
+            glColor3d(0.0, 0.0, 0.0);
+
+            //Draw font for  buttons
+            //=======================FONT============================
+
+
+
+            //========================END============================
+
+            drawname("choose one", -0.61f, .2f, .15f, .15f);
+
+            drawname("2 PLAYER", -0.5f, -.23f, .15f, .15f);
+
+            drawname("1 PLAYER", -0.5f, -.58f, .15f, .15f);
 
             //Draw rectangles for our menu buttons
             for(auto it = options->cbegin(); it != options->cend(); it++){
-              glColor3d(rcolor/0.5, gcolor/0.5, bcolor/0.5);
+              glColor3d(0.0f, 0.0f, 0.0f);
 
               glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
               glBegin(GL_POLYGON);
@@ -309,7 +474,8 @@ void App::draw() {
               glEnd();
             }
 
-
+            glColor3d(rcolor/0.3, gcolor/0.3, bcolor/0.3);
+            drawname("xoxoxoxo", -1.18f, -1.0f, 0.4f, 1.0f);
             // We have been drawing everything to the back buffer
             // Swap the buffers to see the result of what we drew
             glFlush();
@@ -358,7 +524,6 @@ void App::mouseDown(float x, float y){
             ai = false;
             menuOpen = false;
           }
-          cout << turn;
         }
         i++;
       }
