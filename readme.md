@@ -1,5 +1,6 @@
 # Tic-Tac-Toe
 **My first game for CSE165, Object Oriented Programming in Angelo Kyrilov's class.**
+
 This project was made with the FREEGLUTAPP, a demo project to start implementing OpenGL applications
 using freeglut.
 
