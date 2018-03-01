@@ -447,9 +447,9 @@ void App::draw() {
 
             drawname("choose one", -0.61f, .2f, .15f, .15f);
 
-            drawname("2 PLAYER", -0.5f, -.23f, .15f, .15f);
+            drawname("1 PLAYER", -0.5f, -.23f, .15f, .15f);
 
-            drawname("1 PLAYER", -0.5f, -.58f, .15f, .15f);
+            drawname("2 PLAYER", -0.5f, -.58f, .15f, .15f);
 
             //Draw rectangles for our menu buttons
             for(auto it = options->cbegin(); it != options->cend(); it++){
